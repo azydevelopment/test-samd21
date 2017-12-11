@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Atmel Studio Solution File, Format Version 11.00
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "spi", "spi\spi.cppproj", "{DCE6C7E3-EE26-4D79-826B-08594B9AD897}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "i2c", "i2c\i2c.cppproj", "{FA7C0E1D-4E3C-42B5-90B5-526332F46E59}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "atecc508a", "atecc508a\atecc508a.cppproj", "{7DA4A2A8-78D4-4E4D-A42A-C49EC288B667}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "max7219", "max7219\max7219.cppproj", "{A1C84FD3-FAAE-4DDE-A007-5BCD410B266E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Release|ARM = Release|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|ARM.ActiveCfg = Debug|ARM
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|ARM.Build.0 = Debug|ARM
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Release|ARM.ActiveCfg = Release|ARM
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Release|ARM.Build.0 = Release|ARM
+		{FA7C0E1D-4E3C-42B5-90B5-526332F46E59}.Debug|ARM.ActiveCfg = Debug|ARM
+		{FA7C0E1D-4E3C-42B5-90B5-526332F46E59}.Debug|ARM.Build.0 = Debug|ARM
+		{FA7C0E1D-4E3C-42B5-90B5-526332F46E59}.Release|ARM.ActiveCfg = Release|ARM
+		{FA7C0E1D-4E3C-42B5-90B5-526332F46E59}.Release|ARM.Build.0 = Release|ARM
+		{7DA4A2A8-78D4-4E4D-A42A-C49EC288B667}.Debug|ARM.ActiveCfg = Debug|ARM
+		{7DA4A2A8-78D4-4E4D-A42A-C49EC288B667}.Debug|ARM.Build.0 = Debug|ARM
+		{7DA4A2A8-78D4-4E4D-A42A-C49EC288B667}.Release|ARM.ActiveCfg = Release|ARM
+		{7DA4A2A8-78D4-4E4D-A42A-C49EC288B667}.Release|ARM.Build.0 = Release|ARM
+		{A1C84FD3-FAAE-4DDE-A007-5BCD410B266E}.Debug|ARM.ActiveCfg = Debug|ARM
+		{A1C84FD3-FAAE-4DDE-A007-5BCD410B266E}.Debug|ARM.Build.0 = Debug|ARM
+		{A1C84FD3-FAAE-4DDE-A007-5BCD410B266E}.Release|ARM.ActiveCfg = Release|ARM
+		{A1C84FD3-FAAE-4DDE-A007-5BCD410B266E}.Release|ARM.Build.0 = Release|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
