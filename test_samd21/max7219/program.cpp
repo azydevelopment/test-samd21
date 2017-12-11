@@ -10,6 +10,7 @@
 const uint8_t CProgram::SPI_BUS_ID = 0;
 const uint8_t CProgram::NUM_SPI_BUS_DEVICES = 1;
 const uint8_t CProgram::SPI_BUS_DEVICE_0_ID = 0;
+const uint8_t CProgram::SPI_BUS_DEVICE_0_SS_PIN = PIN_PA05;
 const uint8_t CProgram::NUM_TEST_CASES = 1;
 
 /* PUBLIC */
@@ -43,7 +44,7 @@ void CProgram::OnInit() {
 		// init pin config
 		CSPIDeviceAtmelSAMD21::PIN_CONFIG_DESC pinConfig = {};
 		{
-			pinConfig.ss = PIN_PA05;
+			pinConfig.ss = SPI_BUS_DEVICE_0_SS_PIN;
 		}
 		
 		CSPIDeviceAtmelSAMD21::DESC desc = {};
