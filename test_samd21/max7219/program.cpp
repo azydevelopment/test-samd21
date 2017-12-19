@@ -66,6 +66,8 @@ void CProgram::OnInit() {
 			pinConfig.pad1 = PINMUX_UNUSED;
 			pinConfig.pad2 = PINMUX_PA06D_SERCOM0_PAD2;
 			pinConfig.pad3 = PINMUX_PA07D_SERCOM0_PAD3;
+			pinConfig.data_in_pinout = CSPIBusAtmelSAMD21::DATA_IN_PINOUT::PAD_0;
+			pinConfig.data_out_pinout = CSPIBusAtmelSAMD21::DATA_OUT_PINOUT::DO_PAD2_SCK_PAD3_SS_PAD1;
 		}
 		
 		CSPIBusAtmelSAMD21::DESC desc = {};
@@ -89,8 +91,6 @@ void CProgram::OnInit() {
 			busConfig.clock_polarity = CSPIBusAtmelSAMD21::CLOCK_POLARITY::IDLE_LOW;
 			busConfig.clock_phase = CSPIBusAtmelSAMD21::CLOCK_PHASE::SAMPLE_LEADING;
 			busConfig.frame_format = CSPIBusAtmelSAMD21::FRAME_FORMAT::SPI;
-			busConfig.data_in_pinout = CSPIBusAtmelSAMD21::DATA_IN_PINOUT::PAD_0;
-			busConfig.data_out_pinout = CSPIBusAtmelSAMD21::DATA_OUT_PINOUT::DO_PAD2_SCK_PAD3_SS_PAD1;
 			busConfig.immediate_buffer_overflow_notification = false;
 			busConfig.run_in_standby = false;
 			busConfig.address_mode = CSPIBusAtmelSAMD21::ADDRESS_MODE::MASK;
@@ -98,7 +98,7 @@ void CProgram::OnInit() {
 			busConfig.enable_worker_select_low_detect = false;
 			busConfig.enable_worker_data_preload = false;
 			busConfig.character_size = CSPIBusAtmelSAMD21::CHARACTER_SIZE::BITS_8;
-			busConfig.baud_rate = 1;
+			busConfig.baud_rate = 128;
 			busConfig.enable_interrupt_error = false;
 			busConfig.enable_interrupt_worker_select_low = false;
 			busConfig.enable_interrupt_receive_complete = false;
