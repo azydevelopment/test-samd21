@@ -1200,4 +1200,10 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
+  
+  <Target Name="OnCleanOnly" AfterTargets="Clean">
+      <Exec Command="powershell -ExecutionPolicy Bypass util_build_embedded_as7.ps1 $(Configuration)" />
+      <Message Text="Cleaning libraries" Importance="High" />
+  </Target>
+  
 </Project>
