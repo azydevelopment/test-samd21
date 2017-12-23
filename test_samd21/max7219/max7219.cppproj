@@ -33,7 +33,6 @@
     <option id="sam0.drivers.sercom.usart" value="Add" config="polled" content-id="Atmel.ASF" />
     <option id="sam0.drivers.system" value="Add" config="" content-id="Atmel.ASF" />
     <option id="sam0.utils.stdio.stdio_serial" value="Add" config="" content-id="Atmel.ASF" />
-    <option id="sam0.drivers.sercom.spi" value="Add" config="polled" content-id="Atmel.ASF" />
     <option id="sam0.utils.linker_scripts" value="Add" config="" content-id="Atmel.ASF" />
   </options>
   <configurations />
@@ -212,15 +211,6 @@
     <file path="src/ASF/sam0/drivers/sercom/usart/quick_start_dma/qs_usart_dma_use.h" framework="" version="3.35.1" source="sam0\drivers\sercom\usart\quick_start_dma\qs_usart_dma_use.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/sam0/utils/stdio/read.c" framework="" version="3.35.1" source="sam0\utils\stdio\read.c" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/sam0/utils/stdio/write.c" framework="" version="3.35.1" source="sam0\utils\stdio\write.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/sam0/drivers/port/port.c" framework="" version="3.35.1" source="sam0\drivers\port\port.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/sam0/drivers/port/quick_start/qs_port_basic.h" framework="" version="3.35.1" source="sam0\drivers\port\quick_start\qs_port_basic.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/sam0/drivers/port/port.h" framework="" version="3.35.1" source="sam0\drivers\port\port.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/sam0/drivers/sercom/spi/spi.c" framework="" version="3.35.1" source="sam0\drivers\sercom\spi\spi.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/sam0/drivers/sercom/spi/spi.h" framework="" version="3.35.1" source="sam0\drivers\sercom\spi\spi.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/sam0/drivers/sercom/spi/quick_start_slave/qs_spi_slave_basic.h" framework="" version="3.35.1" source="sam0\drivers\sercom\spi\quick_start_slave\qs_spi_slave_basic.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/sam0/drivers/sercom/spi/quick_start_dma/qs_spi_dma_use.h" framework="" version="3.35.1" source="sam0\drivers\sercom\spi\quick_start_dma\qs_spi_dma_use.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/sam0/drivers/sercom/spi/quick_start_master/qs_spi_master_basic.h" framework="" version="3.35.1" source="sam0\drivers\sercom\spi\quick_start_master\qs_spi_master_basic.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/Config/conf_spi.h" framework="" version="3.35.1" source="sam0\drivers\sercom\spi\module_config\conf_spi.h" changed="False" content-id="Atmel.ASF" />
   </files>
   <documentation help="http://asf.atmel.com/docs/3.35.1/common.applications.user_application.sam0_system.user_board.atsamd21j18a/html/index.html" />
   <offline-documentation help="" />
@@ -246,7 +236,6 @@
       <Value>BOARD=USER_BOARD</Value>
       <Value>ARM_MATH_CM0PLUS=true</Value>
       <Value>USART_CALLBACK_MODE=false</Value>
-      <Value>SPI_CALLBACK_MODE=false</Value>
     </ListValues>
   </armgcc.compiler.symbols.DefSymbols>
   <armgcc.compiler.directories.IncludePaths>
@@ -280,8 +269,6 @@
       <Value>../src/ASF/sam0/drivers/sercom</Value>
       <Value>../src/ASF/sam0/drivers/sercom/usart</Value>
       <Value>%24(INCLUDE)</Value>
-      <Value>../src/ASF/sam0/drivers/port</Value>
-      <Value>../src/ASF/sam0/drivers/sercom/spi</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.level>Optimize for size (-Os)</armgcc.compiler.optimization.level>
@@ -385,11 +372,9 @@
       <Value>../src/ASF/common/services/serial</Value>
       <Value>../src/ASF/sam0/drivers/sercom</Value>
       <Value>../src/ASF/sam0/drivers/sercom/usart</Value>
-      <Value>../src/ASF/sam0/drivers/port</Value>
-      <Value>../src/ASF/sam0/drivers/sercom/spi</Value>
     </ListValues>
   </armgcccpp.assembler.general.IncludePaths>
-  <armgcccpp.preprocessingassembler.general.AssemblerFlags>-DUSART_CALLBACK_MODE=false -DSPI_CALLBACK_MODE=false</armgcccpp.preprocessingassembler.general.AssemblerFlags>
+  <armgcccpp.preprocessingassembler.general.AssemblerFlags>-DUSART_CALLBACK_MODE=false</armgcccpp.preprocessingassembler.general.AssemblerFlags>
   <armgcccpp.preprocessingassembler.general.IncludePaths>
     <ListValues>
       <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.2.276\samd21a\include</Value>
@@ -420,8 +405,6 @@
       <Value>../src/ASF/common/services/serial</Value>
       <Value>../src/ASF/sam0/drivers/sercom</Value>
       <Value>../src/ASF/sam0/drivers/sercom/usart</Value>
-      <Value>../src/ASF/sam0/drivers/port</Value>
-      <Value>../src/ASF/sam0/drivers/sercom/spi</Value>
     </ListValues>
   </armgcccpp.preprocessingassembler.general.IncludePaths>
 </ArmGccCpp>
@@ -443,7 +426,6 @@
       <Value>BOARD=USER_BOARD</Value>
       <Value>ARM_MATH_CM0PLUS=true</Value>
       <Value>USART_CALLBACK_MODE=false</Value>
-      <Value>SPI_CALLBACK_MODE=false</Value>
     </ListValues>
   </armgcc.compiler.symbols.DefSymbols>
   <armgcc.compiler.directories.IncludePaths>
@@ -477,8 +459,6 @@
       <Value>../src/ASF/sam0/drivers/sercom</Value>
       <Value>../src/ASF/sam0/drivers/sercom/usart</Value>
       <Value>%24(INCLUDE)</Value>
-      <Value>../src/ASF/sam0/drivers/port</Value>
-      <Value>../src/ASF/sam0/drivers/sercom/spi</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.OtherFlags>-fdata-sections</armgcc.compiler.optimization.OtherFlags>
@@ -582,11 +562,9 @@
       <Value>../src/ASF/common/services/serial</Value>
       <Value>../src/ASF/sam0/drivers/sercom</Value>
       <Value>../src/ASF/sam0/drivers/sercom/usart</Value>
-      <Value>../src/ASF/sam0/drivers/port</Value>
-      <Value>../src/ASF/sam0/drivers/sercom/spi</Value>
     </ListValues>
   </armgcccpp.assembler.general.IncludePaths>
-  <armgcccpp.preprocessingassembler.general.AssemblerFlags>-DUSART_CALLBACK_MODE=false -DSPI_CALLBACK_MODE=false</armgcccpp.preprocessingassembler.general.AssemblerFlags>
+  <armgcccpp.preprocessingassembler.general.AssemblerFlags>-DUSART_CALLBACK_MODE=false</armgcccpp.preprocessingassembler.general.AssemblerFlags>
   <armgcccpp.preprocessingassembler.general.IncludePaths>
     <ListValues>
       <Value>%24(PackRepoDir)\atmel\SAMD21_DFP\1.2.276\samd21a\include</Value>
@@ -617,8 +595,6 @@
       <Value>../src/ASF/common/services/serial</Value>
       <Value>../src/ASF/sam0/drivers/sercom</Value>
       <Value>../src/ASF/sam0/drivers/sercom/usart</Value>
-      <Value>../src/ASF/sam0/drivers/port</Value>
-      <Value>../src/ASF/sam0/drivers/sercom/spi</Value>
     </ListValues>
   </armgcccpp.preprocessingassembler.general.IncludePaths>
 </ArmGccCpp>
@@ -636,9 +612,6 @@
     <Compile Include="program.h">
       <SubType>compile</SubType>
     </Compile>
-    <None Include="src\config\conf_spi.h">
-      <SubType>compile</SubType>
-    </None>
     <None Include="src\asf.h">
       <SubType>compile</SubType>
     </None>
@@ -672,15 +645,6 @@
     <None Include="src\ASF\sam0\drivers\system\clock\clock.h">
       <SubType>compile</SubType>
     </None>
-    <Compile Include="src\ASF\sam0\drivers\port\port.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\sam0\drivers\port\quick_start\qs_port_basic.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\sam0\drivers\port\port.h">
-      <SubType>compile</SubType>
-    </None>
     <Compile Include="src\ASF\sam0\drivers\sercom\sercom.c">
       <SubType>compile</SubType>
     </Compile>
@@ -694,21 +658,6 @@
       <SubType>compile</SubType>
     </None>
     <None Include="src\ASF\sam0\drivers\sercom\usart\quick_start_dma\qs_usart_dma_use.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\sam0\drivers\sercom\spi\quick_start_slave\qs_spi_slave_basic.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\sam0\drivers\sercom\spi\quick_start_dma\qs_spi_dma_use.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\sam0\drivers\sercom\spi\quick_start_master\qs_spi_master_basic.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="src\ASF\sam0\drivers\sercom\spi\spi.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\sam0\drivers\sercom\spi\spi.h">
       <SubType>compile</SubType>
     </None>
     <Compile Include="src\ASF\sam0\drivers\sercom\usart\usart.c">
