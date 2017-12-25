@@ -17,8 +17,7 @@ const uint8_t CProgram::NUM_TEST_CASES          = 1;
 /* PUBLIC */
 
 CProgram::CProgram()
-    : m_logger()
-    , m_pins()
+    : m_pins()
     , m_spi_clock(nullptr)
     , m_spi_bus(nullptr)
     , m_spi_device(nullptr)
@@ -40,8 +39,6 @@ void CProgram::Main() {
 void CProgram::OnInit() {
     // init system
     system_init();
-    m_logger.Init();
-    m_logger.SetEnabled(true);
 
     // init SPI clock
     {

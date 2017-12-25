@@ -29,7 +29,6 @@ private:
     static const uint8_t NUM_TEST_CASES;
 
     // member variables
-    CLoggerAtmelSAMD21 m_logger;
     CPinsAtmelSAMD21 m_pins;
     CClock* m_spi_clock;
     CSPIBus<uint16_t>* m_spi_bus;
