@@ -2,6 +2,7 @@
 
 #include <azydev/embedded/bus/spi/atmel/samd21/bus.h>
 #include <azydev/embedded/bus/spi/atmel/samd21/device.h>
+#include <azydev/embedded/clock/atmel/samd21/clock.h>
 #include <cstring>
 
 /* STATICS */
@@ -36,6 +37,24 @@ void CProgram::OnInit() {
     // init system
     system_init();
 
+    // init SPI clock
+    {
+        CClockAtmelSAMD21::DESC desc = {};
+        desc.id                      = SERCOM2_GCLK_ID_CORE;
+        desc.bus                     = CClockAtmelSAMD21::BUS::APBC;
+        desc.pm_index                = PM_APBCMASK_SERCOM2_Pos;
+
+        m_spi_clock = new CClockAtmelSAMD21(desc);
+
+        CClockAtmelSAMD21::CONFIG_DESC config = {};
+        config.clock_source_generator         = GCLK_GENERATOR_0;
+
+        m_spi_clock->SetConfig(config);
+
+        // leave clock enabled
+        m_spi_clock->SetEnabled(true);
+    }
+
     // init SPI target device
     {
         // init pin config
@@ -57,10 +76,10 @@ void CProgram::OnInit() {
         CSPIBusAtmelSAMD21::PIN_CONFIG_DESC pinConfig = {};
         {
             // TODO IMPLEMENT
-            pinConfig.pad0           = PINMUX_PA04D_SERCOM0_PAD0;
+            pinConfig.pad0           = PINMUX_PA08D_SERCOM2_PAD0;
             pinConfig.pad1           = PINMUX_UNUSED;
-            pinConfig.pad2           = PINMUX_PA06D_SERCOM0_PAD2;
-            pinConfig.pad3           = PINMUX_PA07D_SERCOM0_PAD3;
+            pinConfig.pad2           = PINMUX_PA10D_SERCOM2_PAD2;
+            pinConfig.pad3           = PINMUX_PA11D_SERCOM2_PAD3;
             pinConfig.data_in_pinout = CSPIBusAtmelSAMD21::DATA_IN_PINOUT::PAD_0;
             pinConfig.data_out_pinout =
                 CSPIBusAtmelSAMD21::DATA_OUT_PINOUT::DO_PAD2_SCK_PAD3_SS_PAD1;
@@ -69,6 +88,7 @@ void CProgram::OnInit() {
         CSPIBusAtmelSAMD21::DESC desc = {};
         desc.id                       = SPI_BUS_ID;
         desc.pin_config               = pinConfig;
+        desc.sercomSpi                = &(SERCOM2->SPI);
         desc.num_devices              = NUM_SPI_BUS_DEVICES;
         desc.devices                  = &m_spi_device;
 
