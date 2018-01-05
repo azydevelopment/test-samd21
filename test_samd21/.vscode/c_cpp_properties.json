@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "x64",
+            "includePath": [
+                "${env:INCLUDE}"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE"
+            ],
+            "intelliSenseMode": "msvc-x64",
+            "browse": {
+                "path": [
+                    "${env:INCLUDE}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        }
+    ],
+    "version": 3
+}
