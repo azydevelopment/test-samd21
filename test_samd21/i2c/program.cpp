@@ -33,14 +33,14 @@ void CProgram::OnInit() {
     // init I2C clock
     {
         CClockAtmelSAMD21::DESC desc = {};
-        desc.id                      = SERCOM2_GCLK_ID_CORE;
-        desc.bus                     = CClockAtmelSAMD21::BUS::APBC;
-        desc.pm_index                = PM_APBCMASK_SERCOM2_Pos;
+        desc.id                      = 0;
+        desc.clock_gclk              = CClockAtmelSAMD21::CLOCK_GCLK::CLOCK_SERCOM2_CORE;
+        desc.clock_apbc              = CClockAtmelSAMD21::CLOCK_APBC::CLOCK_SERCOM2;
 
         m_i2c_clock = new CClockAtmelSAMD21(desc);
 
         CClockAtmelSAMD21::CONFIG_DESC config = {};
-        config.clock_source_generator         = GCLK_GENERATOR_0;
+        config.generator                      = CClockAtmelSAMD21::CLOCK_GENERATOR::GCLKGEN0;
 
         m_i2c_clock->SetConfig(config);
 

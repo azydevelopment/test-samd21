@@ -22,7 +22,6 @@ private:
     static const uint8_t NUM_SPI_BUS_DEVICES;
     static const uint8_t SPI_BUS_DEVICE_0_ID;
     static const uint8_t SPI_BUS_DEVICE_0_SS_PIN;
-    static const uint8_t NUM_TEST_CASES;
 
     // member variables
     CPinsAtmelSAMD21 m_pins;

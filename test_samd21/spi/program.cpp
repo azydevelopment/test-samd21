@@ -11,7 +11,6 @@ const uint8_t CProgram::SPI_BUS_ID              = 0;
 const uint8_t CProgram::NUM_SPI_BUS_DEVICES     = 1;
 const uint8_t CProgram::SPI_BUS_DEVICE_0_ID     = 0;
 const uint8_t CProgram::SPI_BUS_DEVICE_0_SS_PIN = PIN_PA05;
-const uint8_t CProgram::NUM_TEST_CASES          = 1;
 
 /* PUBLIC */
 
@@ -40,14 +39,14 @@ void CProgram::OnInit() {
     // init SPI clock
     {
         CClockAtmelSAMD21::DESC desc = {};
-        desc.id                      = SERCOM2_GCLK_ID_CORE;
-        desc.bus                     = CClockAtmelSAMD21::BUS::APBC;
-        desc.pm_index                = PM_APBCMASK_SERCOM2_Pos;
+        desc.id                      = 0;
+        desc.clock_gclk              = CClockAtmelSAMD21::CLOCK_GCLK::CLOCK_SERCOM2_CORE;
+        desc.clock_apbc              = CClockAtmelSAMD21::CLOCK_APBC::CLOCK_SERCOM2;
 
         m_spi_clock = new CClockAtmelSAMD21(desc);
 
         CClockAtmelSAMD21::CONFIG_DESC config = {};
-        config.clock_source_generator         = GCLK_GENERATOR_0;
+        config.generator                      = CClockAtmelSAMD21::CLOCK_GENERATOR::GCLKGEN0;
 
         m_spi_clock->SetConfig(config);
 
