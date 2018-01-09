@@ -50,7 +50,7 @@ void CProgram::OnInit() {
         m_spi_clock = new CClockAtmelSAMD21(desc);
 
         CClockAtmelSAMD21::CONFIG_DESC config = {};
-        config.generator                      = CClockAtmelSAMD21::CLOCK_GENERATOR::GCLKGEN0;
+        config.gclk_generator                 = CClockAtmelSAMD21::GCLK_GENERATOR::GEN0;
 
         m_spi_clock->SetConfig(config);
 
