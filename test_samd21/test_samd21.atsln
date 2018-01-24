@@ -11,6 +11,10 @@ Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "atecc508a", "atecc508a\atec
 EndProject
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "max7219", "max7219\max7219.cppproj", "{A1C84FD3-FAAE-4DDE-A007-5BCD410B266E}"
 EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "dma_spi", "dma_spi\dma_spi.cppproj", "{162CF0D5-2744-42BE-A226-B8CE2387848A}"
+EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "dma", "dma\dma.cppproj", "{B81758DD-7D73-4EF8-A165-0D8E69C15F81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -33,6 +37,14 @@ Global
 		{A1C84FD3-FAAE-4DDE-A007-5BCD410B266E}.Debug|ARM.Build.0 = Debug|ARM
 		{A1C84FD3-FAAE-4DDE-A007-5BCD410B266E}.Release|ARM.ActiveCfg = Release|ARM
 		{A1C84FD3-FAAE-4DDE-A007-5BCD410B266E}.Release|ARM.Build.0 = Release|ARM
+		{162CF0D5-2744-42BE-A226-B8CE2387848A}.Debug|ARM.ActiveCfg = Debug|ARM
+		{162CF0D5-2744-42BE-A226-B8CE2387848A}.Debug|ARM.Build.0 = Debug|ARM
+		{162CF0D5-2744-42BE-A226-B8CE2387848A}.Release|ARM.ActiveCfg = Release|ARM
+		{162CF0D5-2744-42BE-A226-B8CE2387848A}.Release|ARM.Build.0 = Release|ARM
+		{B81758DD-7D73-4EF8-A165-0D8E69C15F81}.Debug|ARM.ActiveCfg = Debug|ARM
+		{B81758DD-7D73-4EF8-A165-0D8E69C15F81}.Debug|ARM.Build.0 = Debug|ARM
+		{B81758DD-7D73-4EF8-A165-0D8E69C15F81}.Release|ARM.ActiveCfg = Release|ARM
+		{B81758DD-7D73-4EF8-A165-0D8E69C15F81}.Release|ARM.Build.0 = Release|ARM
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
