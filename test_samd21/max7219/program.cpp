@@ -116,7 +116,7 @@ void CProgram::OnInit() {
             busConfig.enable_worker_select_low_detect = false;
             busConfig.enable_worker_data_preload      = false;
             busConfig.character_size                  = CSPIBusAtmelSAMD21::CHARACTER_SIZE::BITS_8;
-            busConfig.baud_rate                       = 128;
+            busConfig.baud_rate                       = 1;
             busConfig.enable_interrupt_error          = false;
             busConfig.enable_interrupt_worker_select_low   = false;
             busConfig.enable_interrupt_receive_complete    = false;
@@ -139,32 +139,95 @@ void CProgram::OnInit() {
     // set up MAX7219 transcoder
     {
         m_transcoder_max7219.AttachToBus(*m_spi_bus, SPI_BUS_DEVICE_0_ID);
-        m_transcoder_max7219.SetEnabled(false);
-        m_transcoder_max7219.SetDecodeMode(0);
-        m_transcoder_max7219.SetScanLimit(7);
-        m_transcoder_max7219.SetIntensity(1);
-        m_transcoder_max7219.SetEnabled(true);
+
+        m_transcoder_max7219.Start();
+		for (uint8_t i = 0; i < 4; i++) {
+			m_transcoder_max7219.SetEnabled(false);
+		}
+        m_transcoder_max7219.Stop();
+		
+		m_transcoder_max7219.Start();
+		for (uint8_t i = 0; i < 4; i++) {
+			m_transcoder_max7219.SetEnabledDisplayTest(false);
+		}
+		m_transcoder_max7219.Stop();
+		 
+		m_transcoder_max7219.Start();
+		for (uint8_t i = 0; i < 4; i++) {
+			m_transcoder_max7219.SetDecodeMode(0);
+		}
+		m_transcoder_max7219.Stop();
+		
+		m_transcoder_max7219.Start();
+		for (uint8_t i = 0; i < 4; i++) {
+			m_transcoder_max7219.SetScanLimit(7);
+		}
+		m_transcoder_max7219.Stop();
+		
+		m_transcoder_max7219.Start();
+		for (uint8_t i = 0; i < 4; i++) {
+			m_transcoder_max7219.SetIntensity(1);
+		}
+		m_transcoder_max7219.Stop();
+		 
+		m_transcoder_max7219.Start();
+		for (uint8_t i = 0; i < 4; i++) {
+			m_transcoder_max7219.SetEnabled(true);
+		}
+		m_transcoder_max7219.Stop();
+		
+        //turn everything off by default
+        {
+	        for (uint8_t i = 0; i < 8; i++) {
+		        m_transcoder_max7219.Start();
+		        for (uint8_t j = 0; j < 4; j++) {
+			        m_transcoder_max7219.SetRow(i, 0);
+		        }
+		        m_transcoder_max7219.Stop();
+	        }
+        }
     }
 }
 
 void CProgram::OnUpdate() {
-    m_time += 0.01;
-    if (m_time > 1000000) {
-        m_time = 0;
-    }
-
-    uint8_t x = static_cast<uint8_t>(sin(10000 * m_time + 3.14159265358f / 2) * 2.5 + 4);
-    uint8_t y = static_cast<uint8_t>(sin(10007 * m_time) * 2.5 + 4);
-
-    m_spi_clock->SetEnabled(true);
-
-    for (uint8_t i = 0; i < 8; i++) {
-        if (i == x) {
-            m_transcoder_max7219.SetRow(i, 1 << y);
-        } else {
-            m_transcoder_max7219.SetRow(i, 0);
-        }
-    }
-
-    m_spi_clock->SetEnabled(false);
+     m_time += 0.01;
+     if (m_time > 1000000) {
+	     m_time = 0;
+     }
+     
+     uint8_t x = static_cast<uint8_t>(sin(10000 * m_time + 3.14159265358f / 2) * 2.5 + 4);
+     uint8_t y = static_cast<uint8_t>(sin(10003 * m_time) * 2.5 + 4);
+     
+     for (uint8_t i = 0; i < 8; i++) {
+	     m_transcoder_max7219.Start();
+	     
+	     //for(uint8_t j = 0; j < 4; j++) {
+		     if (i == x) {
+			     m_transcoder_max7219.SetRow(i, 1 << y);
+			     } else {
+			     m_transcoder_max7219.SetRow(i, 0);
+		     }
+	     //}
+	     
+	     m_transcoder_max7219.Stop();
+     }
+	
+	//for(uint8_t i = 0; i < 8; i++) {
+		//for(uint8_t j = 0; j < 8; j++) {
+			//m_transcoder_max7219.Start();
+			//m_transcoder_max7219.SetRow(i, 1 << j);
+			//m_transcoder_max7219.SetRow(i, 1 << j);
+			//m_transcoder_max7219.SetRow(i, 1 << j);
+			//m_transcoder_max7219.SetRow(i, 1 << j);
+			//m_transcoder_max7219.Stop();
+		//}
+		//
+		//m_transcoder_max7219.Start();
+		//m_transcoder_max7219.SetRow(i, 0);
+		//m_transcoder_max7219.SetRow(i, 0);
+		//m_transcoder_max7219.SetRow(i, 0);
+		//m_transcoder_max7219.SetRow(i, 0);
+		//m_transcoder_max7219.Stop();
+	//}
+	
 }
