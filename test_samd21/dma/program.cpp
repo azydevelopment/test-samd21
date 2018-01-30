@@ -22,6 +22,10 @@ void CProgram::Main() {
     }
 }
 
+const uint16_t NUM_BYTES = 8;
+uint8_t dataSrc[NUM_BYTES] = {};
+uint8_t dataDst[NUM_BYTES] = {};
+
 void CProgram::OnInit() {
     // init system
     system_init();
@@ -51,16 +55,17 @@ void CProgram::OnInit() {
 		// enable DMA engine
 		m_dma_engine->SetEnabled(true);
     }
+	
+	for(uint16_t i = 0; i < NUM_BYTES; i++) {
+		dataSrc[i] = i;
+	}
 }
-
-const uint8_t NUM_BYTES = 8;
-uint8_t dataSrc[NUM_BYTES] = {0,1,2,3,4,5,6,7};
-uint8_t dataDst[NUM_BYTES] = {};
 
 void CProgram::OnUpdate() {
     // init DMA transfer
     CDMAChannelAtmelSAMD21::TRANSFER_DESC transferDesc = {};
     {
+		transferDesc.callback_transfer_complete = nullptr;
         transferDesc.priority            = CDMAChannelAtmelSAMD21::PRIORITY::LVL_0;
         transferDesc.trigger             = CDMAChannelAtmelSAMD21::TRIGGER::SOFTWARE_OR_EVENT;
         transferDesc.trigger_action      = CDMAChannelAtmelSAMD21::TRIGGER_ACTION::START_TRANSACTION;
@@ -77,19 +82,19 @@ void CProgram::OnUpdate() {
         transferDesc.step_size_select =
             CDMAChannelAtmelSAMD21::DESCRIPTOR::STEP_SIZE_SELECT::DESTINATION;
         transferDesc.step_size           = CDMAChannelAtmelSAMD21::DESCRIPTOR::STEP_SIZE::X1;
-        transferDesc.num_beats_per_block = sizeof(dataSrc);
+        transferDesc.num_beats = NUM_BYTES;
         transferDesc.source_address      = reinterpret_cast<uint32_t>(dataSrc) + NUM_BYTES;
         transferDesc.destination_address = reinterpret_cast<uint32_t>(dataDst) + NUM_BYTES;
-        transferDesc.enable_interrupt_transfer_error    = false;
-        transferDesc.enable_interrupt_transfer_complete = false;
-        transferDesc.enable_interrupt_channel_suspend   = false;
+        transferDesc.enable_interrupt_transfer_error    = true;
+        transferDesc.enable_interrupt_channel_suspend   = true;
     }
 
-    m_dma_engine->StartTransfer(transferDesc);
+	IDMAEntity::ITransferControl* const transferControl = nullptr;
+	m_dma_engine->AddTransfer(transferDesc, &transferControl);
 	
-	DMAC->SWTRIGCTRL.reg |= 1 << 0;
-	
-	while(DMAC->BUSYCH.reg != 0) {
-		uint8_t temp = 2;
-	} 
+	while(transferControl->IsTransferInProgress()) {
+		if(transferControl->IsPendingTrigger()) {
+			transferControl->TriggerTransferStep();
+		}
+	}
 }

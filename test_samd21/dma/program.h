@@ -4,9 +4,6 @@
 
 #include <asf.h>
 
-template<typename TRANSFER_PRIMITIVE>
-class CSPIBus;
-class CSPIDevice;
 class CDMAEngineAtmelSAMD21;
 class CClock;
 
