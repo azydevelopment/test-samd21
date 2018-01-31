@@ -5,12 +5,12 @@
 #include <azydev/embedded/clock/atmel/samd21/clock.h>
 #include <cstring>
 
-/* STATICS */
+/* FILE SCOPED STATICS */
 
-const uint8_t CProgram::SPI_BUS_ID              = 0;
-const uint8_t CProgram::NUM_SPI_BUS_DEVICES     = 1;
-const uint8_t CProgram::SPI_BUS_DEVICE_0_ID     = 0;
-const uint8_t CProgram::SPI_BUS_DEVICE_0_SS_PIN = PIN_PA05;
+static const uint8_t SPI_BUS_ID = 0;
+static const uint8_t NUM_SPI_BUS_DEVICES = 1;
+static const uint8_t SPI_BUS_DEVICE_0_ID = 0;
+static const uint8_t SPI_BUS_DEVICE_0_SS_PIN = PIN_PA05;
 
 /* PUBLIC */
 
@@ -135,7 +135,7 @@ void CProgram::OnInit() {
 
 void CProgram::OnUpdate() {
     m_spi_bus->Start(SPI_BUS_DEVICE_0_ID);
-    for (uint8_t i = 0; i < 8; i++) {
+    for (uint8_t i = 0; i < 4; i++) {
         m_spi_bus->Write(i);
     }
     m_spi_bus->Stop();
