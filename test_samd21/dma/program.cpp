@@ -2,13 +2,17 @@
 
 #include <azydev/embedded/clock/atmel/samd21/clock.h>
 #include <azydev/embedded/dma/atmel/samd21/engine.h>
+#include <azydev/embedded/dma/common/packet.h>
 #include <cstring>
 
 /* FILE SCOPED STATICS */
 
 static const uint16_t NUM_BYTES   = 64;
-static uint8_t dataSrc[NUM_BYTES] = {};
 static uint8_t dataDst[NUM_BYTES] = {};
+	
+static void OnTransferComplete(const uint8_t transferId) {
+	uint8_t temp = transferId;
+}
 
 /* PUBLIC */
 
@@ -57,18 +61,27 @@ void CProgram::OnInit() {
         // enable DMA engine
         m_dma_engine->SetEnabled(true);
     }
-
-    // populate source data
-    for (uint16_t i = 0; i < NUM_BYTES; i++) {
-        dataSrc[i] = i;
-    }
 }
 
 void CProgram::OnUpdate() {
+	
+	// create DMA packet
+	IDMAPacket::DESC packetDesc = {};
+	packetDesc.max_size = NUM_BYTES;
+	
+	IDMAPacket dmaPacket(packetDesc);
+	
+	// populate source data
+	for (uint16_t i = 0; i < NUM_BYTES; i++) {
+		dmaPacket.Write(i);
+	}
+	
     // init DMA transfer
     CDMAChannelAtmelSAMD21::TRANSFER_DESC transferDesc = {};
     {
-        transferDesc.callback_transfer_complete = nullptr;
+		transferDesc.id = 0;
+		transferDesc.dma_packet = &dmaPacket;
+        transferDesc.callback_transfer_complete = &OnTransferComplete;
         transferDesc.priority                   = CDMAChannelAtmelSAMD21::PRIORITY::LVL_0;
         transferDesc.trigger        = CDMAChannelAtmelSAMD21::TRIGGER::SOFTWARE_OR_EVENT;
         transferDesc.trigger_action = CDMAChannelAtmelSAMD21::TRIGGER_ACTION::START_TRANSACTION;
@@ -85,15 +98,13 @@ void CProgram::OnUpdate() {
         transferDesc.step_size_select =
             CDMAChannelAtmelSAMD21::DESCRIPTOR::STEP_SIZE_SELECT::DESTINATION;
         transferDesc.step_size           = CDMAChannelAtmelSAMD21::DESCRIPTOR::STEP_SIZE::X1;
-        transferDesc.num_beats           = NUM_BYTES;
-        transferDesc.source_address      = reinterpret_cast<uint32_t>(dataSrc) + NUM_BYTES;
         transferDesc.destination_address = reinterpret_cast<uint32_t>(dataDst) + NUM_BYTES;
         transferDesc.enable_interrupt_transfer_error  = true;
         transferDesc.enable_interrupt_channel_suspend = true;
     }
 
     IDMAEntity::ITransferControl* transferControl = nullptr;
-    m_dma_engine->AddTransfer(transferDesc, &transferControl);
+    m_dma_engine->StartTransfer(transferDesc, &transferControl);
 
     while (transferControl->IsTransferInProgress()) {
         if (transferControl->IsPendingTrigger()) {
