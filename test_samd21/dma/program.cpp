@@ -7,11 +7,11 @@
 
 /* FILE SCOPED STATICS */
 
-static const uint16_t NUM_BYTES   = 64;
+static const uint16_t NUM_BYTES   = 8;
 static uint8_t dataDst[NUM_BYTES] = {};
-	
+
 static void OnTransferComplete(const uint8_t transferId) {
-	uint8_t temp = transferId;
+    uint8_t temp = transferId;
 }
 
 /* PUBLIC */
@@ -64,23 +64,23 @@ void CProgram::OnInit() {
 }
 
 void CProgram::OnUpdate() {
-	
-	// create DMA packet
-	IDMAPacket::DESC packetDesc = {};
-	packetDesc.max_size = NUM_BYTES;
-	
-	IDMAPacket dmaPacket(packetDesc);
-	
-	// populate source data
-	for (uint16_t i = 0; i < NUM_BYTES; i++) {
-		dmaPacket.Write(i);
-	}
-	
+    // create DMA packet
+    IDMAPacket::DESC packetDesc = {};
+    packetDesc.max_size         = NUM_BYTES;
+	packetDesc.data_type = IDMAPacket::DATA_TYPE::UINT8_T;
+
+    IDMAPacket dmaPacket(packetDesc);
+
+    // populate source data
+    for (uint16_t i = 0; i < NUM_BYTES; i++) {
+        dmaPacket.Write(i);
+    }
+
     // init DMA transfer
     CDMAChannelAtmelSAMD21::TRANSFER_DESC transferDesc = {};
     {
-		transferDesc.id = 0;
-		transferDesc.dma_packet = &dmaPacket;
+        transferDesc.id                         = 0;
+        transferDesc.dma_packet                 = &dmaPacket;
         transferDesc.callback_transfer_complete = &OnTransferComplete;
         transferDesc.priority                   = CDMAChannelAtmelSAMD21::PRIORITY::LVL_0;
         transferDesc.trigger        = CDMAChannelAtmelSAMD21::TRIGGER::SOFTWARE_OR_EVENT;
