@@ -2,13 +2,14 @@
 
 #include <azydev/embedded/clock/atmel/samd21/clock.h>
 #include <azydev/embedded/dma/atmel/samd21/engine.h>
-#include <azydev/embedded/dma/common/packet.h>
+#include <azydev/embedded/dma/common/node.h>
+#include <azydev/embedded/dma/common/node_address.h>
+#include <azydev/embedded/dma/common/node_packet.h>
 #include <cstring>
 
 /* FILE SCOPED STATICS */
 
-static const uint16_t NUM_BYTES   = 8;
-static uint8_t dataDst[NUM_BYTES] = {};
+static const uint16_t NUM_BYTES = 8;
 
 static void OnTransferComplete(const uint8_t transferId) {
     uint8_t temp = transferId;
@@ -64,24 +65,36 @@ void CProgram::OnInit() {
 }
 
 void CProgram::OnUpdate() {
-    // create DMA packet
-    IDMAPacket::DESC packetDesc = {};
-    packetDesc.max_size         = NUM_BYTES;
-	packetDesc.data_type = IDMAPacket::DATA_TYPE::UINT8_T;
+	// setup source node
+	IDMANodePacket::DESC descSrc = {};
+	descSrc.data_type = IDMANode::BEAT_PRIMITIVE::UINT8_T;
+	descSrc.is_incrementing = true;
+	descSrc.num_beats_max = NUM_BYTES;
+	
+	IDMANodePacket nodeSrc(descSrc);
+	
+	// populate source data
+	for (uint8_t i = 0; i < NUM_BYTES; i++) {
+		nodeSrc.Write(i);
+	}
+	
+	// setup destination node
+	IDMANodePacket::DESC descDst = {};
+	descDst.data_type = IDMANode::BEAT_PRIMITIVE::UINT8_T;
+	descDst.is_incrementing = true;
+	descDst.num_beats_max = NUM_BYTES;
 
-    IDMAPacket dmaPacket(packetDesc);
-
-    // populate source data
-    for (uint16_t i = 0; i < NUM_BYTES; i++) {
-        dmaPacket.Write(i);
-    }
-
+	IDMANodePacket nodeDst(descDst);
+	
     // init DMA transfer
     CDMAChannelAtmelSAMD21::TRANSFER_DESC transferDesc = {};
     {
         transferDesc.id                         = 0;
-        transferDesc.dma_packet                 = &dmaPacket;
+		transferDesc.num_beats = NUM_BYTES;
+		transferDesc.node_source = &nodeSrc;
+		transferDesc.node_destination = &nodeDst;
         transferDesc.callback_transfer_complete = &OnTransferComplete;
+		
         transferDesc.priority                   = CDMAChannelAtmelSAMD21::PRIORITY::LVL_0;
         transferDesc.trigger        = CDMAChannelAtmelSAMD21::TRIGGER::SOFTWARE_OR_EVENT;
         transferDesc.trigger_action = CDMAChannelAtmelSAMD21::TRIGGER_ACTION::START_TRANSACTION;
@@ -93,12 +106,9 @@ void CProgram::OnUpdate() {
         transferDesc.block_completed_action =
             CDMAChannelAtmelSAMD21::DESCRIPTOR::BLOCK_COMPLETED_ACTION::DISABLE_IF_LAST;
         transferDesc.beat_size = CDMAChannelAtmelSAMD21::DESCRIPTOR::BEAT_SIZE::BITS_8;
-        transferDesc.enable_source_address_increment      = true;
-        transferDesc.enable_destination_address_increment = true;
         transferDesc.step_size_select =
             CDMAChannelAtmelSAMD21::DESCRIPTOR::STEP_SIZE_SELECT::DESTINATION;
         transferDesc.step_size           = CDMAChannelAtmelSAMD21::DESCRIPTOR::STEP_SIZE::X1;
-        transferDesc.destination_address = reinterpret_cast<uint32_t>(dataDst) + NUM_BYTES;
         transferDesc.enable_interrupt_transfer_error  = true;
         transferDesc.enable_interrupt_channel_suspend = true;
     }

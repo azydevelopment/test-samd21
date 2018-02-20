@@ -1,7 +1,6 @@
 #pragma once
 
 #include <azydev/embedded/pins/atmel/samd21/pins.h>
-#include <azydev/embedded/pins/atmel/samd21/pins.h>
 
 #include <asf.h>
 
