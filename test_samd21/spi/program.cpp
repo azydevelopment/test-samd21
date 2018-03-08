@@ -7,9 +7,9 @@
 
 /* FILE SCOPED STATICS */
 
-static const uint8_t SPI_BUS_ID = 0;
-static const uint8_t NUM_SPI_BUS_DEVICES = 1;
-static const uint8_t SPI_BUS_DEVICE_0_ID = 0;
+static const uint8_t SPI_BUS_ID              = 0;
+static const uint8_t NUM_SPI_BUS_DEVICES     = 1;
+static const uint8_t SPI_BUS_DEVICE_0_ID     = 0;
 static const uint8_t SPI_BUS_DEVICE_0_SS_PIN = PIN_PA05;
 
 /* PUBLIC */
@@ -137,6 +137,9 @@ void CProgram::OnUpdate() {
     m_spi_bus->Start(SPI_BUS_DEVICE_0_ID);
     for (uint8_t i = 0; i < 4; i++) {
         m_spi_bus->Write(i);
+        uint16_t data;
+        m_spi_bus->Read(data);
+        data = 0;
     }
     m_spi_bus->Stop();
 }
