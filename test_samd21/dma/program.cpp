@@ -2,6 +2,7 @@
 
 #include <azydev/embedded/clock/atmel/samd21/clock.h>
 #include <azydev/embedded/dma/atmel/samd21/engine.h>
+#include <azydev/embedded/dma/atmel/samd21/transfer.h>
 #include <azydev/embedded/dma/common/node.h>
 #include <azydev/embedded/dma/common/node_address.h>
 #include <azydev/embedded/dma/common/node_packet.h>
@@ -19,7 +20,8 @@ static void OnTransferEnded(const uint8_t transferId, const IDMAEntity::RESULT r
 
 CProgram::CProgram()
     : m_dma_clock(nullptr)
-    , m_dma_engine(nullptr) {
+    , m_dma_engine(nullptr)
+    , m_dma_transfer(nullptr) {
 }
 
 CProgram::~CProgram() {
@@ -62,16 +64,29 @@ void CProgram::OnInit() {
         // enable DMA engine
         m_dma_engine->SetEnabled(true);
     }
+
+    // init DMA transfer object
+    {
+        CDMATransferAtmelSAMD21::DESC desc = {};
+        desc.id_initial                    = 0;
+        desc.num_steps_max                 = 1;
+
+        // create DMA transfer
+        m_dma_transfer = new CDMATransferAtmelSAMD21(desc);
+    }
 }
 
 void CProgram::OnUpdate() {
+    // reset transfer
+    m_dma_transfer->Reset(111);
+
     // setup source node
-    IDMANodePacket::DESC descSrc = {};
+    CDMANodePacket::DESC descSrc = {};
     descSrc.data_type            = IDMANode::BEAT_PRIMITIVE::UINT8_T;
     descSrc.is_incrementing      = true;
     descSrc.num_beats_max        = NUM_BYTES;
 
-    IDMANodePacket nodeSrc(descSrc);
+    CDMANodePacket nodeSrc(descSrc);
 
     // populate source data
     for (uint8_t i = 0; i < NUM_BYTES; i++) {
@@ -79,46 +94,52 @@ void CProgram::OnUpdate() {
     }
 
     // setup destination node
-    IDMANodePacket::DESC descDst = {};
+    CDMANodePacket::DESC descDst = {};
     descDst.data_type            = IDMANode::BEAT_PRIMITIVE::UINT8_T;
     descDst.is_incrementing      = true;
     descDst.num_beats_max        = NUM_BYTES;
 
-    IDMANodePacket nodeDst(descDst);
+    CDMANodePacket nodeDst(descDst);
 
-    // init DMA transfer
-    CDMAChannelAtmelSAMD21::TRANSFER_DESC transferDesc = {};
+    // add transfer step
     {
-        transferDesc.id                      = 0;
-        transferDesc.num_beats               = NUM_BYTES;
-        transferDesc.node_source             = &nodeSrc;
-        transferDesc.node_destination        = &nodeDst;
-        transferDesc.callback_transfer_ended = &OnTransferEnded;
+        CDMATransferAtmelSAMD21::STEP_DESC step = {};
+        step.num_beats                          = NUM_BYTES;
+        step.node_source                        = &nodeSrc;
+        step.node_destination                   = &nodeDst;
 
-        transferDesc.priority       = CDMAChannelAtmelSAMD21::PRIORITY::LVL_0;
-        transferDesc.trigger        = CDMAChannelAtmelSAMD21::TRIGGER::SOFTWARE_OR_EVENT;
-        transferDesc.trigger_action = CDMAChannelAtmelSAMD21::TRIGGER_ACTION::START_TRANSACTION;
-        transferDesc.enable_event_output = false;
-        transferDesc.enable_event_input  = false;
-        transferDesc.event_input_action  = CDMAChannelAtmelSAMD21::EVENT_INPUT_ACTION::NOACT;
-        transferDesc.event_output_selection =
-            CDMAChannelAtmelSAMD21::DESCRIPTOR::EVENT_OUTPUT_SELECTION::DISABLED;
-        transferDesc.block_completed_action =
-            CDMAChannelAtmelSAMD21::DESCRIPTOR::BLOCK_COMPLETED_ACTION::DISABLE_IF_LAST;
-        transferDesc.beat_size = CDMAChannelAtmelSAMD21::DESCRIPTOR::BEAT_SIZE::BITS_8;
-        transferDesc.step_size_select =
-            CDMAChannelAtmelSAMD21::DESCRIPTOR::STEP_SIZE_SELECT::DESTINATION;
-        transferDesc.step_size = CDMAChannelAtmelSAMD21::DESCRIPTOR::STEP_SIZE::X1;
-        transferDesc.enable_interrupt_transfer_error = true;
-        // transferDesc.enable_interrupt_channel_suspend = true;
+        step.event_output_selection =
+            CDMATransferAtmelSAMD21::DESCRIPTOR::EVENT_OUTPUT_SELECTION::DISABLED;
+        step.block_completed_action =
+            CDMATransferAtmelSAMD21::DESCRIPTOR::BLOCK_COMPLETED_ACTION::DISABLE_IF_LAST;
+        step.beat_size        = CDMATransferAtmelSAMD21::DESCRIPTOR::BEAT_SIZE::BITS_8;
+        step.step_size_select = CDMATransferAtmelSAMD21::DESCRIPTOR::STEP_SIZE_SELECT::DESTINATION;
+        step.step_size        = CDMATransferAtmelSAMD21::DESCRIPTOR::STEP_SIZE::X1;
+
+        m_dma_transfer->AddStep(step);
     }
 
-    IDMAEntity::ITransferControl* transferControl = nullptr;
-    m_dma_engine->StartTransfer(transferDesc, &transferControl);
+    // create transfer config
+    CDMATransferAtmelSAMD21::CONFIG_DESC transferConfig = {};
+    {
+        transferConfig.callback_on_transfer_ended = &OnTransferEnded;
+        transferConfig.priority                   = CDMATransferAtmelSAMD21::PRIORITY::LVL_0;
+        transferConfig.trigger        = CDMATransferAtmelSAMD21::TRIGGER::SOFTWARE_OR_EVENT;
+        transferConfig.trigger_action = CDMATransferAtmelSAMD21::TRIGGER_ACTION::START_TRANSACTION;
+        transferConfig.enable_event_output = false;
+        transferConfig.enable_event_input  = false;
+        transferConfig.event_input_action  = CDMATransferAtmelSAMD21::EVENT_INPUT_ACTION::NOACT;
+    }
 
-    while (transferControl->IsTransferInProgress()) {
-        if (transferControl->IsPendingTrigger()) {
-            transferControl->TriggerTransferStep();
+    // execute the transfer
+    {
+        CDMATransfer::ITransferControl* transferControl = nullptr;
+        m_dma_engine->StartTransfer(*m_dma_transfer, transferConfig, &transferControl);
+
+        while (transferControl->IsTransferInProgress()) {
+            if (transferControl->IsPendingTrigger()) {
+                transferControl->TriggerTransferStep();
+            }
         }
     }
 }

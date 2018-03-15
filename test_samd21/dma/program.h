@@ -4,7 +4,8 @@
 
 #include <asf.h>
 
-class CDMAEngineAtmelSAMD21;
+class CDMAEngine;
+class CDMATransfer;
 class CClock;
 
 class CProgram final
@@ -16,7 +17,8 @@ public:
 
 private:
     CClock* m_dma_clock;
-    CDMAEngineAtmelSAMD21* m_dma_engine;
+    CDMAEngine* m_dma_engine;
+    CDMATransfer* m_dma_transfer;
 
     // methods
     void OnInit();
