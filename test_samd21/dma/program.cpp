@@ -89,7 +89,7 @@ void CProgram::OnUpdate() {
 
     // populate source data
     for (uint8_t i = 0; i < NUM_BYTES; i++) {
-        nodeSrc.Write(i + 1);
+        nodeSrc.RecordWrite(i + 1);
     }
 
     // setup destination node
@@ -98,6 +98,9 @@ void CProgram::OnUpdate() {
     descDst.num_beats_max                 = NUM_BYTES;
 
     CDMANodePacket<uint8_t> nodeDst(descDst);
+
+    // track that this packet will receive data
+    nodeDst.RecordRead(NUM_BYTES);
 
     // add transfer step
     {
