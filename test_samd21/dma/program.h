@@ -8,6 +8,9 @@ template<typename BEAT_PRIMITIVE>
 class CDMAEngine;
 
 template<typename BEAT_PRIMITIVE>
+class CDMAPool;
+
+template<typename BEAT_PRIMITIVE>
 class CDMATransfer;
 
 class CClock;
@@ -22,6 +25,7 @@ public:
 private:
     CClock* m_dma_clock;
     CDMAEngine<uint8_t>* m_dma_engine;
+    CDMAPool<uint8_t>* m_dma_pool;
     CDMATransfer<uint8_t>* m_dma_transfer;
 
     // methods
