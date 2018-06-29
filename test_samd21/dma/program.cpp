@@ -79,8 +79,8 @@ void CProgram::OnInit() {
 }
 
 void CProgram::OnUpdate() {
+    // create DMA memory pool
     if (m_dma_pool == nullptr) {
-        // create DMA memory pool
         CDMAPool<uint8_t>::DESC descPool = {};
         descPool.num_allocations_max     = NUM_STEPS * 2;
         descPool.num_beats_max           = NUM_BYTES * NUM_STEPS * 2;
@@ -116,7 +116,7 @@ void CProgram::OnUpdate() {
         }
     }
 
-    // reset transfer
+    // reset DMA transfer
     m_dma_transfer->Reset(TRANSFER_ID);
 
     // add transfer step
@@ -129,8 +129,8 @@ void CProgram::OnUpdate() {
 
             step.event_output_selection =
                 CDMATransferAtmelSAMD21<uint8_t>::DESCRIPTOR::EVENT_OUTPUT_SELECTION::DISABLED;
-            step.block_completed_action = CDMATransferAtmelSAMD21<uint8_t>::DESCRIPTOR::
-                BLOCK_COMPLETED_ACTION::DISABLE_IF_LAST;
+            step.block_completed_action = CDMATransferAtmelSAMD21<
+                uint8_t>::DESCRIPTOR::BLOCK_COMPLETED_ACTION::DISABLE_IF_LAST;
             step.beat_size = CDMATransferAtmelSAMD21<uint8_t>::DESCRIPTOR::BEAT_SIZE::BITS_8;
             step.step_size_select =
                 CDMATransferAtmelSAMD21<uint8_t>::DESCRIPTOR::STEP_SIZE_SELECT::DESTINATION;
