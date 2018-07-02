@@ -21,7 +21,7 @@ private:
     // member variables
     CPinsAtmelSAMD21 m_pins;
     CClock* m_spi_clock;
-    CSPIBus<uint16_t>* m_spi_bus;
+    CSPIBus<uint8_t>* m_spi_bus;
     CSPIDevice* m_spi_device;
 
     // methods

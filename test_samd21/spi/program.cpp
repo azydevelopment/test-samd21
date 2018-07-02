@@ -107,13 +107,12 @@ void CProgram::OnInit() {
             busConfig.frame_format       = CSPIBusAtmelSAMD21::FRAME_FORMAT::SPI;
             busConfig.immediate_buffer_overflow_notification = false;
             busConfig.run_in_standby                         = false;
-            busConfig.address_mode                    = CSPIBusAtmelSAMD21::ADDRESS_MODE::MASK;
-            busConfig.enable_manager_worker_select    = false;
-            busConfig.enable_worker_select_low_detect = false;
-            busConfig.enable_worker_data_preload      = false;
-            busConfig.character_size                  = CSPIBusAtmelSAMD21::CHARACTER_SIZE::BITS_8;
-            busConfig.baud_rate                       = 255;
-            busConfig.enable_interrupt_error          = false;
+            busConfig.address_mode                         = CSPIBusAtmelSAMD21::ADDRESS_MODE::MASK;
+            busConfig.enable_manager_worker_select         = false;
+            busConfig.enable_worker_select_low_detect      = false;
+            busConfig.enable_worker_data_preload           = false;
+            busConfig.baud_rate                            = 255;
+            busConfig.enable_interrupt_error               = false;
             busConfig.enable_interrupt_worker_select_low   = false;
             busConfig.enable_interrupt_receive_complete    = false;
             busConfig.enable_interrupt_transmit_complete   = false;
@@ -137,7 +136,7 @@ void CProgram::OnUpdate() {
     m_spi_bus->Start(SPI_BUS_DEVICE_0_ID);
     for (uint8_t i = 0; i < 4; i++) {
         m_spi_bus->Write(i);
-        uint16_t data;
+        uint8_t data;
         m_spi_bus->Read(data);
         data = 0;
     }
