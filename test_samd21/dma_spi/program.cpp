@@ -4,8 +4,7 @@
 #include <azydev/embedded/bus/spi/atmel/samd21/device.h>
 #include <azydev/embedded/clock/atmel/samd21/clock.h>
 #include <azydev/embedded/dma/atmel/samd21/engine.h>
-#include <azydev/embedded/dma/common/packet.h>
-#include <cstring>
+#include <azydev/embedded/dma/common/pool.h>
 
 /* FILE SCOPED STATICS */
 
@@ -15,15 +14,13 @@ static const uint8_t SPI_BUS_DEVICE_0_ID     = 0;
 static const uint8_t SPI_BUS_DEVICE_0_SS_PIN = PIN_PA05;
 static const uint16_t NUM_BYTES              = 4;
 
-static void OnTransferComplete(const uint8_t transferId) {
-	uint8_t temp = transferId;
-}
-
 /* PUBLIC */
 
 CProgram::CProgram()
     : m_dma_clock(nullptr)
     , m_dma_engine(nullptr)
+    , m_dma_pool(nullptr)
+    , m_dma_transfer(nullptr)
     , m_spi_clock(nullptr)
     , m_spi_bus(nullptr)
     , m_spi_device(nullptr)
@@ -62,13 +59,32 @@ void CProgram::OnInit() {
 
     // init DMA engine
     {
-        CDMAEngineAtmelSAMD21::DESC desc = {};
+        CDMAEngineAtmelSAMD21<uint8_t>::DESC desc = {};
 
         // create DMA engine
-        m_dma_engine = new CDMAEngineAtmelSAMD21(desc);
+        m_dma_engine = new CDMAEngineAtmelSAMD21<uint8_t>(desc);
 
         // enable DMA engine
         m_dma_engine->SetEnabled(true);
+    }
+
+    // init DMA pool
+    {
+        CDMAPool<uint8_t>::DESC descPool = {};
+        descPool.num_allocations_max     = 1;
+        descPool.num_beats_max           = NUM_BYTES;
+
+        m_dma_pool = new CDMAPool<uint8_t>(descPool);
+    }
+
+    // init DMA transfer object
+    {
+        CDMATransferAtmelSAMD21<uint8_t>::DESC desc = {};
+        desc.id_initial                             = 0;
+        desc.num_steps_max                          = 1;
+
+        // create DMA transfer
+        m_dma_transfer = new CDMATransferAtmelSAMD21<uint8_t>(desc);
     }
 
     // init SPI clock
@@ -142,17 +158,21 @@ void CProgram::OnInit() {
             busConfig.frame_format       = CSPIBusAtmelSAMD21::FRAME_FORMAT::SPI;
             busConfig.immediate_buffer_overflow_notification = false;
             busConfig.run_in_standby                         = false;
-            busConfig.address_mode                    = CSPIBusAtmelSAMD21::ADDRESS_MODE::MASK;
-            busConfig.enable_manager_worker_select    = false;
-            busConfig.enable_worker_select_low_detect = false;
-            busConfig.enable_worker_data_preload      = false;
-            busConfig.character_size                  = CSPIBusAtmelSAMD21::CHARACTER_SIZE::BITS_8;
-            busConfig.baud_rate                       = 128;
-            busConfig.enable_interrupt_error          = false;
+            busConfig.address_mode                         = CSPIBusAtmelSAMD21::ADDRESS_MODE::MASK;
+            busConfig.enable_manager_worker_select         = false;
+            busConfig.enable_worker_select_low_detect      = false;
+            busConfig.enable_worker_data_preload           = false;
+            busConfig.baud_rate                            = 128;
+            busConfig.enable_interrupt_error               = false;
             busConfig.enable_interrupt_worker_select_low   = false;
             busConfig.enable_interrupt_receive_complete    = false;
             busConfig.enable_interrupt_transmit_complete   = false;
             busConfig.enable_interrupt_data_register_empty = false;
+
+            // DMA
+            busConfig.dma_transfer_id = 0;
+            busConfig.dma_engine      = m_dma_engine;
+            busConfig.dma_transfer    = m_dma_transfer;
         }
 
         // set role
@@ -169,51 +189,33 @@ void CProgram::OnInit() {
 }
 
 void CProgram::OnUpdate() {
-	// create DMA packet
-	IDMAPacket::DESC packetDesc = {};
-	packetDesc.max_size         = NUM_BYTES;
+    // reset DMA pool
+    m_dma_pool->PopAllocation();
 
-	IDMAPacket dmaPacket(packetDesc);
-
-	// populate source data
-	for (uint16_t i = 0; i < NUM_BYTES; i++) {
-		dmaPacket.Write(i);
-	}
-	
-    // init DMA transfer
-    CDMAChannelAtmelSAMD21::TRANSFER_DESC transferDesc = {};
+    // prepare transfer node
+    const IDMANode<uint8_t>* nodeSrc = nullptr;
     {
-		transferDesc.id = 0;
-		transferDesc.dma_packet = &dmaPacket;
-        transferDesc.callback_transfer_complete = &OnTransferComplete;
-        transferDesc.priority                   = CDMAChannelAtmelSAMD21::PRIORITY::LVL_0;
-        transferDesc.trigger                    = CDMAChannelAtmelSAMD21::TRIGGER::SERCOM2_TX;
-        transferDesc.trigger_action      = CDMAChannelAtmelSAMD21::TRIGGER_ACTION::START_TRANSACTION;
-        transferDesc.enable_event_output = false;
-        transferDesc.enable_event_input  = false;
-        transferDesc.event_input_action  = CDMAChannelAtmelSAMD21::EVENT_INPUT_ACTION::NOACT;
-        transferDesc.event_output_selection =
-            CDMAChannelAtmelSAMD21::DESCRIPTOR::EVENT_OUTPUT_SELECTION::DISABLED;
-        transferDesc.block_completed_action =
-            CDMAChannelAtmelSAMD21::DESCRIPTOR::BLOCK_COMPLETED_ACTION::DISABLE_IF_LAST;
-        transferDesc.beat_size = CDMAChannelAtmelSAMD21::DESCRIPTOR::BEAT_SIZE::BITS_8;
-        transferDesc.enable_source_address_increment      = true;
-        transferDesc.enable_destination_address_increment = false;
-        transferDesc.step_size_select =
-            CDMAChannelAtmelSAMD21::DESCRIPTOR::STEP_SIZE_SELECT::DESTINATION;
-        transferDesc.step_size           = CDMAChannelAtmelSAMD21::DESCRIPTOR::STEP_SIZE::X1;
-        transferDesc.destination_address = reinterpret_cast<uint32_t>(&(SERCOM2->SPI.DATA.reg));
-        transferDesc.enable_interrupt_transfer_error  = true;
-        transferDesc.enable_interrupt_channel_suspend = true;
+        // prepare source node
+        uint8_t allocationId = 0;
+        m_dma_pool->PushAllocation(allocationId);
+        for (uint32_t j = 0; j < NUM_BYTES; j++) {
+            m_dma_pool->RecordWrite(j);
+        }
+        nodeSrc = m_dma_pool->GetAllocationDMANode(allocationId);
     }
 
-    m_spi_bus->Start(SPI_BUS_DEVICE_0_ID);
+    // execute the SPI transfer
+    {
+        m_spi_bus->Start(SPI_BUS_DEVICE_0_ID);
 
-    IDMAEntity::ITransferControl* transferControl = nullptr;
-    m_dma_engine->StartTransfer(transferDesc, &transferControl);
+        // uint16_t data;
+        // m_spi_bus->Read(data);
+        // data = 0;
 
-    while (transferControl->IsTransferInProgress()) {
+        CSPIBusAtmelSAMD21* spiBusSAMD21 = static_cast<CSPIBusAtmelSAMD21*>(m_spi_bus);
+
+        spiBusSAMD21->Write(*nodeSrc, NUM_BYTES);
+
+        m_spi_bus->Stop();
     }
-
-    m_spi_bus->Stop();
 }
